@@ -33,10 +33,12 @@ def main():
     app.setApplicationName("CopySoft")
     app.setOrganizationName("CopySoft")
 
-    # Set app icon if bundled
-    icon_path = os.path.join(BASE_DIR, "icon.png")
-    if os.path.exists(icon_path):
-        app.setWindowIcon(QIcon(icon_path))
+    # Set app icon — try platform-specific formats first, then PNG preview
+    for icon_name in ("assets/icon.ico", "assets/icon.icns", "assets/icon_preview.png"):
+        icon_path = os.path.join(BASE_DIR, icon_name)
+        if os.path.exists(icon_path):
+            app.setWindowIcon(QIcon(icon_path))
+            break
 
     window = MainWindow()
     window.show()

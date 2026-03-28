@@ -14,8 +14,9 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=[
-        ('core',  'core'),
-        ('gui',   'gui'),
+        ('core',   'core'),
+        ('gui',    'gui'),
+        ('assets', 'assets'),
     ],
     hiddenimports=[
         'PyQt5',
@@ -76,5 +77,5 @@ exe = EXE(
     entitlements_file=None,
     # Windows specific
     version=None,
-    icon=None,              # replace with 'icon.ico' if you have one
+    icon='assets/icon.ico',
 )
