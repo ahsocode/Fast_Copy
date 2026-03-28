@@ -208,10 +208,13 @@ def _copy_one(
 def _friendly_error(e: Exception) -> str:
     """Return a concise, human-readable error message."""
     msg = str(e)
-    if isinstance(e, OSError) and e.winerror == 206:
-        return f"Path too long (WinError 206): {e.filename or msg}"
-    if isinstance(e, OSError) and e.winerror == 5:
-        return f"Access denied: {e.filename or msg}"
-    if isinstance(e, OSError) and e.winerror == 32:
-        return f"File in use by another process: {e.filename or msg}"
+    # winerror only exists on Windows; use getattr to avoid AttributeError on macOS/Linux
+    winerror = getattr(e, "winerror", None)
+    filename = getattr(e, "filename", None) or msg
+    if winerror == 206:
+        return f"Path too long (WinError 206): {filename}"
+    if winerror == 5:
+        return f"Access denied: {filename}"
+    if winerror == 32:
+        return f"File in use by another process: {filename}"
     return msg

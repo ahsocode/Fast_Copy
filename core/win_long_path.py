@@ -1,4 +1,4 @@
-"""
+r"""
 Windows Extended-Length Path Support
 =====================================
 Windows default MAX_PATH = 260 characters.
@@ -10,8 +10,8 @@ Rules for \\?\ prefix:
   - No . or .. components
   - UNC paths (\\server\share) need \\?\UNC\ prefix
 
-This module provides a single public function: `to_extended(path)` that is
-a no-op on macOS/Linux and applies the prefix on Windows.
+This module provides to_extended(path) and strip_extended(path).
+Both are no-ops on macOS/Linux; on Windows they add/remove the \\?\ prefix.
 """
 
 import os
@@ -23,11 +23,6 @@ def to_extended(path: str) -> str:
     Convert a path to Windows extended-length format if on Windows.
     Safe to call on paths that already have the prefix.
     No-op on macOS/Linux.
-
-    Examples:
-        'D:\\very\\long\\path' → '\\\\?\\D:\\very\\long\\path'
-        '\\\\server\\share\\file' → '\\\\?\\UNC\\server\\share\\file'
-        '/Users/foo/bar' → '/Users/foo/bar'  (macOS/Linux: unchanged)
     """
     if sys.platform != 'win32':
         return path
@@ -49,9 +44,7 @@ def to_extended(path: str) -> str:
 
 
 def strip_extended(path: str) -> str:
-    """
-    Remove \\?\ prefix (e.g. for display purposes).
-    """
+    """Remove extended-length prefix for display purposes."""
     if path.startswith('\\\\?\\UNC\\'):
         return '\\\\' + path[8:]
     if path.startswith('\\\\?\\'):

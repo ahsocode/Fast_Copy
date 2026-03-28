@@ -94,11 +94,18 @@ def get_free_space(path: str) -> int:
     """Return free space in bytes on the volume containing `path`."""
     if SYSTEM == "Windows":
         free = ctypes.c_ulonglong(0)
-        ctypes.windll.kernel32.GetDiskFreeSpaceExW(
+        ok = ctypes.windll.kernel32.GetDiskFreeSpaceExW(
             os.path.splitdrive(os.path.abspath(path))[0] + "\\",
             None, None, ctypes.byref(free)
         )
-        return free.value
+        if ok:
+            return free.value
+        # API failed — fall back to shutil so we don't block a valid copy
+        try:
+            import shutil
+            return shutil.disk_usage(path).free
+        except Exception:
+            return 0
     else:
         st = os.statvfs(path)
         return st.f_bavail * st.f_frsize
@@ -222,11 +229,8 @@ def _preallocate_windows(f: BinaryIO, size: int) -> None:
     """Pre-allocate file size on Windows using SetEndOfFile."""
     try:
         import ctypes
-        handle = ctypes.windll.kernel32.GetStdHandle(-11)  # not right, use fileno
-        # Use SetFilePointerEx + SetEndOfFile
-        kernel32 = ctypes.windll.kernel32
-        # Get OS handle from fd
         import msvcrt
+        kernel32 = ctypes.windll.kernel32
         os_handle = msvcrt.get_osfhandle(f.fileno())
         dist = ctypes.c_longlong(size)
         kernel32.SetFilePointerEx(os_handle, dist, None, 0)  # FILE_BEGIN=0

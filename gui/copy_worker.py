@@ -51,11 +51,12 @@ class CopyWorker(QThread):
 
             # Copy finished (normally or with per-file errors)
             if p.errors:
-                if p.bytes_done == 0:
-                    # Nothing was copied at all — truly fatal
-                    self.error.emit(p.errors[0][1])
+                first_path, first_msg = p.errors[0]
+                if not first_path:
+                    # Empty path = engine-level fatal error (not a per-file skip)
+                    self.error.emit(first_msg)
                 else:
-                    # Partial success: some files skipped
+                    # Per-file errors: partial success, some files skipped
                     self.finished_with_errors.emit(list(p.errors))
             else:
                 self.finished.emit()
