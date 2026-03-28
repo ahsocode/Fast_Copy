@@ -1,0 +1,30 @@
+# Cross-compile CopySoft.exe on macOS/Linux using Wine + Python for Windows
+# Usage (from project root):
+#   docker build --platform linux/amd64 -f build/Dockerfile.windows -t copysoft-builder .
+#   docker run --platform linux/amd64 --rm -v "$(pwd)/dist:/out" copysoft-builder
+
+FROM --platform=linux/amd64 tobix/pywine:3.11
+
+LABEL description="CopySoft Windows exe cross-compiler"
+
+# Install PyQt5 and PyInstaller into the Windows Python via Wine
+RUN wine pip install --no-cache-dir \
+        PyQt5==5.15.11 \
+        pyinstaller==6.11.1 \
+    && wineserver --wait
+
+# Copy project source
+WORKDIR /src
+COPY . .
+
+# Run PyInstaller via Wine
+RUN wine pyinstaller copysoft.spec \
+        --clean \
+        --noconfirm \
+        --distpath /dist \
+        --workpath /tmp/build \
+    && wineserver --wait
+
+# Default: copy exe to mounted /out directory
+CMD cp /dist/CopySoft.exe /out/CopySoft.exe \
+    && echo "✅  /out/CopySoft.exe is ready"
