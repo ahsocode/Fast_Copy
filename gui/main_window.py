@@ -30,6 +30,7 @@ from PyQt5.QtGui import QFont, QColor, QPalette, QIcon
 
 from core.copy_engine import CopyJob, CopyMode, CopyProgress
 from gui.copy_worker import CopyWorker
+from gui.browse_dialog import BrowseDialog
 
 
 class MainWindow(QMainWindow):
@@ -84,9 +85,12 @@ class MainWindow(QMainWindow):
         src_btn_row = QHBoxLayout()
         self._btn_add_files = QPushButton("Add Files")
         self._btn_add_folder = QPushButton("Add Folder")
+        self._btn_browse_select = QPushButton("Browse & Select…")
+        self._btn_browse_select.setObjectName("browse_select_btn")
         self._btn_remove = QPushButton("Remove")
         src_btn_row.addWidget(self._btn_add_files)
         src_btn_row.addWidget(self._btn_add_folder)
+        src_btn_row.addWidget(self._btn_browse_select)
         src_btn_row.addWidget(self._btn_remove)
         src_layout.addLayout(src_btn_row)
         splitter.addWidget(src_box)
@@ -163,6 +167,7 @@ class MainWindow(QMainWindow):
         # ── Connections ───────────────────────────────────────────
         self._btn_add_files.clicked.connect(self._add_files)
         self._btn_add_folder.clicked.connect(self._add_folder)
+        self._btn_browse_select.clicked.connect(self._browse_and_select)
         self._btn_remove.clicked.connect(self._remove_selected)
         self._btn_dst_browse.clicked.connect(self._browse_dst)
         self._btn_start.clicked.connect(self._start_copy)
@@ -253,6 +258,15 @@ class MainWindow(QMainWindow):
                 background-color: #313244;
                 color: #6c7086;
             }
+            QPushButton#browse_select_btn {
+                background-color: #a6e3a1;
+                color: #1e1e2e;
+                font-weight: bold;
+                border: none;
+            }
+            QPushButton#browse_select_btn:hover {
+                background-color: #94e2d5;
+            }
             QProgressBar {
                 border: 1px solid #313244;
                 border-radius: 4px;
@@ -303,6 +317,12 @@ class MainWindow(QMainWindow):
         path = QFileDialog.getExistingDirectory(self, "Select Folder")
         if path:
             self._add_source(path)
+
+    def _browse_and_select(self):
+        dlg = BrowseDialog(self)
+        if dlg.exec_() == BrowseDialog.Accepted:
+            for p in dlg.selected_paths():
+                self._add_source(p)
 
     def _add_source(self, path: str):
         # Avoid duplicates
