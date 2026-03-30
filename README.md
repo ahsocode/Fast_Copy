@@ -13,7 +13,8 @@
 
 - 🚀 **Maximum copy speed** — auto-selects best I/O strategy per file type and drive
 - 🖥️ **Simple GUI** — drag-and-drop source, one-click destination, live progress
-- 📦 **Portable** — single `.exe` (Windows) or binary (macOS), no install needed
+- 📂 **Browse & Select** — in-app filesystem browser with checkboxes; pick files from multiple directories before copying
+- 📦 **Portable** — single `.exe` (Windows) or `.app` (macOS), no install needed
 - 🔁 **Skip-on-error** — bad files are skipped, copy continues; full error report at end
 - 🗂️ **Long path support** — handles Windows paths > 260 characters (WinError 206 fix)
 - ⏱️ **Live stats** — speed, elapsed time, estimated time remaining (ETA)
@@ -32,7 +33,7 @@
 │  │ photos/       │  │                                │
 │  │ project.zip   │  │                                │
 │  └───────────────┘  │                                │
-│  [Add Files] [Add Folder] [Remove]                   │
+│  [Add Files] [Add Folder] [Browse & Select…] [Remove] │
 ├──────────────────────────────────────────────────────┤
 │  ████████████████░░░░  78%                           │
 │  Speed: 2.3 GB/s  ·  7.8 GB / 10.0 GB  ·  3/5 items │
@@ -69,12 +70,24 @@ Fast_Copy automatically detects the best copy strategy:
 
 ---
 
+## 📂 Browse & Select
+
+Click **Browse & Select…** in the source panel to open the in-app filesystem browser:
+
+- Folders listed first, then files alphabetically with size info
+- Check any combination of files and folders across multiple directories
+- Double-click a folder to navigate into it; **↑ Up** button to go back
+- **Select All / Clear All** bulk actions
+- Checked state persists across navigation — pick from multiple directories, then click **Add N Selected** to add them all at once
+
+---
+
 ## 📥 Download (Portable)
 
 | Platform | File | Notes |
 |----------|------|-------|
-| Windows | `CopySoft.exe` | No install — double-click to run |
-| macOS | `CopySoft` | `chmod +x CopySoft && ./CopySoft` |
+| Windows | `Fast_Copy.exe` | No install — double-click to run |
+| macOS | `Fast_Copy-macOS.zip` | Extract → double-click `Fast_Copy.app` |
 
 > Download from the [**Releases**](../../releases) page.
 
@@ -156,6 +169,7 @@ Fast_Copy/
 │
 ├── gui/
 │   ├── main_window.py          # PyQt5 main window
+│   ├── browse_dialog.py        # In-app filesystem browser with checkboxes
 │   └── copy_worker.py          # QThread bridge — relays engine events to GUI
 │
 ├── build/
