@@ -34,18 +34,18 @@ jobs:
         run: |
           dir dist\
           echo "Size:"
-          (Get-Item dist\CopySoft.exe).length / 1MB
+          (Get-Item dist\Fast_Copy.exe).length / 1MB
         shell: pwsh
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CopySoft-Windows-portable
-          path: dist/CopySoft.exe
+          name: Fast_Copy-Windows-portable
+          path: dist/Fast_Copy.exe
           retention-days: 30
 
   # ──────────────────────────────────────────────────────────────
-  # macOS — produces CopySoft  (portable binary)
+  # macOS — produces Fast_Copy.app bundle
   # ──────────────────────────────────────────────────────────────
   build-macos:
     runs-on: macos-latest
@@ -63,15 +63,19 @@ jobs:
         run: |
           pip install PyQt5==5.15.11 pyinstaller==6.11.1
 
-      - name: Build macOS binary
+      - name: Build macOS app bundle
         run: |
           pyinstaller copysoft.spec --clean --noconfirm
+
+      - name: Zip app bundle
+        run: |
+          cd dist && zip -r Fast_Copy-macOS.zip Fast_Copy.app
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CopySoft-macOS-portable
-          path: dist/CopySoft
+          name: Fast_Copy-macOS
+          path: dist/Fast_Copy-macOS.zip
           retention-days: 30
 
   # ──────────────────────────────────────────────────────────────
@@ -85,21 +89,21 @@ jobs:
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
-          name: CopySoft-Windows-portable
+          name: Fast_Copy-Windows-portable
           path: release/
 
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
-          name: CopySoft-macOS-portable
+          name: Fast_Copy-macOS
           path: release/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            release/CopySoft.exe
-            release/CopySoft
+            release/Fast_Copy.exe
+            release/Fast_Copy-macOS.zip
           body: |
             ## CopySoft — High-Speed File Copier
 
