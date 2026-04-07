@@ -1,3 +1,11 @@
 PyQt5>=5.15.0
 pyinstaller>=6.0.0
 Pillow>=10.0.0          # icon generation (build/generate_icon.py)
+
+# Testing dependencies
+pytest>=7.0
+pytest-qt>=4.2.0
+pytest-cov>=4.0
+pytest-mock>=3.10
+pytest-timeout>=2.1
+unittest-xml-reporting>=3.2
